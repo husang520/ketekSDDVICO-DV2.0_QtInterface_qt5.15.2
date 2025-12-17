@@ -1,0 +1,1 @@
+# ketekSDDVICO-DV2.0_QtInterface_qt5.15.2
