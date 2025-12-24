@@ -21,6 +21,14 @@ typedef struct {
     UInt32Type* mcaData;    // mca 数据
 
     VICOStatusType vicostatype; // vico 的状态类型
+    VersionType libraryVersion; // vico 库版本类型
+    VersionType daemonVersion;  // daemon 服务版本类型
+    MCUStatusInfoType mcuStatus; // MCU 信息类型
+    FirmwareVersionType version; // 硬件版本
+    UInt16Type temperature;    // DPP 板载温度
+    LiveInfo2VICOType liveInfo;    // vico 信息 里面很多 都是关于 mcu 的
+    SoftwarePackage swPkg; // 用于标识现在处于什么状态 有的函数必须是 应用状态才能使用
+    LiveInfo2VIAMPType liveInfo_viamp;  // viamp 信息 都是关于 sdd 的
 
 
 } VICOLib_DeviceContext;

@@ -52,6 +52,7 @@ public:
     void setupStatusBar();
     void setupUI();
     void setupConnections();
+    void setupTimer();
 
     void updateServiceStatus(const QString &status);
 
@@ -61,6 +62,7 @@ public:
 
     void scanAndGetDeviceInfo();
     void refreshDeviceInfo();
+    void getMCUStatus();
 
     void onRunTimerTimeout();
 
@@ -69,6 +71,8 @@ public:
     void startRun();
 
     void saveMCAToFile(const UInt32Type* mcaData, int numberOfBins);
+
+    void updateUI();
 
 
 
@@ -83,7 +87,9 @@ private:
     VicoLibrary* vicolib;
 
     QTimer *m_runTimer = nullptr;
-    VICOLib_DeviceContext vico_ctx;
+    VICOLib_DeviceContext vico_ctx = {0};
+
+    QTimer *m_liveTimer = nullptr;
 
 
 

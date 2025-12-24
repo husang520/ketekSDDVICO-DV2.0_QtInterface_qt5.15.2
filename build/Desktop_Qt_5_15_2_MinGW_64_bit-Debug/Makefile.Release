@@ -16,10 +16,10 @@ CXX           = g++
 DEFINES       = -DUNICODE -D_UNICODE -DWIN32 -DMINGW_HAS_SECURE_API=1 -DQT_QML_DEBUG -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_NEEDS_QMAIN
 CFLAGS        = -fno-keep-inline-dllexport -O2 -Wall -Wextra -Wextra $(DEFINES)
 CXXFLAGS      = -fno-keep-inline-dllexport -O2 -std=gnu++1z -Wall -Wextra -Wextra -fexceptions -mthreads $(DEFINES)
-INCPATH       = -I..\..\..\KETEKVIAMPDemo_qt5 -I. -ID:\APPDownload\Qt\5.15.2\mingw81_64\include -ID:\APPDownload\Qt\5.15.2\mingw81_64\include\QtWidgets -ID:\APPDownload\Qt\5.15.2\mingw81_64\include\QtGui -ID:\APPDownload\Qt\5.15.2\mingw81_64\include\QtANGLE -ID:\APPDownload\Qt\5.15.2\mingw81_64\include\QtNetwork -ID:\APPDownload\Qt\5.15.2\mingw81_64\include\QtCore -Irelease -I. -I/include -ID:\APPDownload\Qt\5.15.2\mingw81_64\mkspecs\win32-g++ 
+INCPATH       = -I..\..\..\KETEKVIAMPDemo_qt5 -I. -I..\..\include -ID:\APPDownload\Qt\5.15.2\mingw81_64\include -ID:\APPDownload\Qt\5.15.2\mingw81_64\include\QtWidgets -ID:\APPDownload\Qt\5.15.2\mingw81_64\include\QtGui -ID:\APPDownload\Qt\5.15.2\mingw81_64\include\QtANGLE -ID:\APPDownload\Qt\5.15.2\mingw81_64\include\QtNetwork -ID:\APPDownload\Qt\5.15.2\mingw81_64\include\QtCore -Irelease -I. -I/include -ID:\APPDownload\Qt\5.15.2\mingw81_64\mkspecs\win32-g++ 
 LINKER      =        g++
 LFLAGS        =        -Wl,-s -Wl,-subsystem,windows -mthreads
-LIBS        =        D:\APPDownload\Qt\5.15.2\mingw81_64\lib\libQt5Widgets.a D:\APPDownload\Qt\5.15.2\mingw81_64\lib\libQt5Gui.a D:\APPDownload\Qt\5.15.2\mingw81_64\lib\libQt5Network.a D:\APPDownload\Qt\5.15.2\mingw81_64\lib\libQt5Core.a  -lmingw32 D:\APPDownload\Qt\5.15.2\mingw81_64\lib\libqtmain.a -LC:\openssl\lib -LC:\Utils\my_sql\mysql-5.7.25-winx64\lib -LC:\Utils\postgresql\pgsql\lib -lshell32 
+LIBS        =        -LD:\unicomp\Upper_Computer\unicomp_qt\KETEKVIAMPDemo_qt5\libs -lVICOLib D:\APPDownload\Qt\5.15.2\mingw81_64\lib\libQt5Widgets.a D:\APPDownload\Qt\5.15.2\mingw81_64\lib\libQt5Gui.a D:\APPDownload\Qt\5.15.2\mingw81_64\lib\libQt5Network.a D:\APPDownload\Qt\5.15.2\mingw81_64\lib\libQt5Core.a  -lmingw32 D:\APPDownload\Qt\5.15.2\mingw81_64\lib\libqtmain.a -LC:\openssl\lib -LC:\Utils\my_sql\mysql-5.7.25-winx64\lib -LC:\Utils\postgresql\pgsql\lib -lshell32 
 QMAKE         = D:\APPDownload\Qt\5.15.2\mingw81_64\bin\qmake.exe
 DEL_FILE      = del
 CHK_DIR_EXISTS= if not exist
@@ -251,15 +251,22 @@ release/moc_mainwindow.cpp: ../../mainwindow.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qelapsedtimer.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QLibrary \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qlibrary.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QDir \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qdir.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qfileinfo.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QDateTime \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qdatetime.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QTextStream \
 		../../VICOLib_impl/vicolib.h \
 		../../VICOLib_impl/types.h \
 		../../VICOLib_impl/vicolibglobal.h \
 		../../vicolibrary.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QVector \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QFileInfo \
 		../../structdef.h \
 		release/moc_predefs.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/bin/moc.exe
-	D:\APPDownload\Qt\5.15.2\mingw81_64\bin\moc.exe $(DEFINES) --include D:/unicomp/Upper_Computer/unicomp_qt/KETEKVIAMPDemo_qt5/build/Desktop_Qt_5_15_2_MinGW_64_bit-Debug/release/moc_predefs.h -ID:/APPDownload/Qt/5.15.2/mingw81_64/mkspecs/win32-g++ -ID:/unicomp/Upper_Computer/unicomp_qt/KETEKVIAMPDemo_qt5 -ID:/APPDownload/Qt/5.15.2/mingw81_64/include -ID:/APPDownload/Qt/5.15.2/mingw81_64/include/QtWidgets -ID:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui -ID:/APPDownload/Qt/5.15.2/mingw81_64/include/QtANGLE -ID:/APPDownload/Qt/5.15.2/mingw81_64/include/QtNetwork -ID:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore -I. -ID:/APPDownload/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++ -ID:/APPDownload/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/x86_64-w64-mingw32 -ID:/APPDownload/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/backward -ID:/APPDownload/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include -ID:/APPDownload/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed -ID:/APPDownload/Qt/Tools/mingw810_64/x86_64-w64-mingw32/include ..\..\mainwindow.h -o release\moc_mainwindow.cpp
+	D:\APPDownload\Qt\5.15.2\mingw81_64\bin\moc.exe $(DEFINES) --include D:/unicomp/Upper_Computer/unicomp_qt/KETEKVIAMPDemo_qt5/build/Desktop_Qt_5_15_2_MinGW_64_bit-Debug/release/moc_predefs.h -ID:/APPDownload/Qt/5.15.2/mingw81_64/mkspecs/win32-g++ -ID:/unicomp/Upper_Computer/unicomp_qt/KETEKVIAMPDemo_qt5 -ID:/unicomp/Upper_Computer/unicomp_qt/KETEKVIAMPDemo_qt5/include -ID:/APPDownload/Qt/5.15.2/mingw81_64/include -ID:/APPDownload/Qt/5.15.2/mingw81_64/include/QtWidgets -ID:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui -ID:/APPDownload/Qt/5.15.2/mingw81_64/include/QtANGLE -ID:/APPDownload/Qt/5.15.2/mingw81_64/include/QtNetwork -ID:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore -I. -ID:/APPDownload/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++ -ID:/APPDownload/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/x86_64-w64-mingw32 -ID:/APPDownload/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/backward -ID:/APPDownload/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include -ID:/APPDownload/Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed -ID:/APPDownload/Qt/Tools/mingw810_64/x86_64-w64-mingw32/include ..\..\mainwindow.h -o release\moc_mainwindow.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -529,18 +536,24 @@ release/main.o: ../../main.cpp ../../mainwindow.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qelapsedtimer.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QLibrary \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qlibrary.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QDir \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qdir.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qfileinfo.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QDateTime \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qdatetime.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QTextStream \
 		../../VICOLib_impl/vicolib.h \
 		../../VICOLib_impl/types.h \
 		../../VICOLib_impl/vicolibglobal.h \
 		../../vicolibrary.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QVector \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QFileInfo \
 		../../structdef.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtWidgets/QApplication \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtWidgets/qapplication.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtWidgets/qdesktopwidget.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qguiapplication.h \
-		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qinputmethod.h \
-		../../adminhelper.h
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qinputmethod.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\main.o ..\..\main.cpp
 
 release/mainwindow.o: ../../mainwindow.cpp ../../mainwindow.h \
@@ -675,11 +688,18 @@ release/mainwindow.o: ../../mainwindow.cpp ../../mainwindow.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qelapsedtimer.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QLibrary \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qlibrary.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QDir \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qdir.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qfileinfo.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QDateTime \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qdatetime.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QTextStream \
 		../../VICOLib_impl/vicolib.h \
 		../../VICOLib_impl/types.h \
 		../../VICOLib_impl/vicolibglobal.h \
 		../../vicolibrary.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QVector \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QFileInfo \
 		../../structdef.h \
 		ui_mainwindow.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QVariant \
@@ -811,6 +831,54 @@ release/vicolibrary.o: ../../vicolibrary.cpp ../../VicoLibrary.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qsharedpointer_impl.h \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QString \
 		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QVector \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QFileInfo \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qfileinfo.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qfile.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qfiledevice.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtWidgets/QMessageBox \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtWidgets/qmessagebox.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtWidgets/qtwidgetsglobal.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qtguiglobal.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qtgui-config.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtWidgets/qtwidgets-config.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtWidgets/qdialog.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtWidgets/qwidget.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qwindowdefs.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qwindowdefs_win.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qmargins.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qpaintdevice.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qrect.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qsize.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qpalette.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qcolor.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qrgb.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qrgba64.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qbrush.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qmatrix.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qpolygon.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qregion.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qdatastream.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qline.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qtransform.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qimage.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qpixelformat.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qpixmap.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qfont.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qfontmetrics.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qfontinfo.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtWidgets/qsizepolicy.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qcursor.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qkeysequence.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qevent.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qurl.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qurlquery.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qvector2d.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtGui/qtouchdevice.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QDir \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qdir.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/QCoreApplication \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qcoreapplication.h \
+		D:/APPDownload/Qt/5.15.2/mingw81_64/include/QtCore/qeventloop.h \
 		../../VICOLib_impl/types.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\vicolibrary.o ..\..\vicolibrary.cpp
 

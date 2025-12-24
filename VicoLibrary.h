@@ -13,18 +13,30 @@
 #include <./VICOLib_impl/types.h>
 
 // 定义函数指针类型
-typedef int (*ScanUsbDevicesFunc)();
-typedef int (*GetNumberOfDevicesFunc)(UInt8Type* numberOfDevices);
-typedef int (*GetDeviceInfoByIndexFunc)(UInt8Type index, UInt8Type serialNumberSize, CharType* serialNumber, InterfaceType* deviceInterface);
-typedef int (*SetSlowFilterPeakingTimeFunc)(const CharType* serialNumber, FloatType* peakingTime);
-typedef int (*SetStopConditionFunc)(const CharType* serialNumber, StopConditionType stopConditionType, DoubleType* stopConditionValue);
-typedef int (*SetMCANumberOfBinsFunc)(const CharType* serialNumber, UInt16Type* numberOfBins);
-typedef int (*SetMCABytesPerBinFunc)(const CharType* serialNumber, UInt8Type* bytesPerBin);
-typedef int (*StartRunFunc)(const CharType* serialNumber);
-typedef int (*GetRunStatisticsFunc)(const CharType* serialNumber, RunStatisticsType* runStatistics);
-typedef int (*GetMCADataUInt32Func)(const CharType* serialNumber, UInt8Type bytesPerBin, UInt16Type numberOfBins, UInt32Type* mcaData);
-
+typedef VICOStatusType (*ScanUsbDevicesFunc)();
+typedef VICOStatusType (*GetNumberOfDevicesFunc)(UInt8Type* numberOfDevices);
+typedef VICOStatusType (*GetDeviceInfoByIndexFunc)(UInt8Type index, UInt8Type serialNumberSize, CharType* serialNumber, InterfaceType* deviceInterface);
+typedef VICOStatusType (*SetSlowFilterPeakingTimeFunc)(const CharType* serialNumber, FloatType* peakingTime);
+typedef VICOStatusType (*SetStopConditionFunc)(const CharType* serialNumber, StopConditionType stopConditionType, DoubleType* stopConditionValue);
+typedef VICOStatusType (*SetMCANumberOfBinsFunc)(const CharType* serialNumber, UInt16Type* numberOfBins);
+typedef VICOStatusType (*SetMCABytesPerBinFunc)(const CharType* serialNumber, UInt8Type* bytesPerBin);
+typedef VICOStatusType (*StartRunFunc)(const CharType* serialNumber);
+typedef VICOStatusType (*GetRunStatisticsFunc)(const CharType* serialNumber, RunStatisticsType* runStatistics);
+typedef VICOStatusType (*GetMCADataUInt32Func)(const CharType* serialNumber, UInt8Type bytesPerBin, UInt16Type numberOfBins, UInt32Type* mcaData);
 typedef VICOStatusType (*RefreshDeviceConnectionsFunc)();
+typedef VICOStatusType (*GetLibraryVersionFunc)(VersionType* libraryVersion);
+typedef VICOStatusType (*GetDaemonVersionFunc)(VersionType* daemonVersion);
+
+typedef DPPStatusType (*GetMCUStatusInfoFunc)(const CharType* serialNumber, MCUStatusInfoType* mcuStatus);
+typedef DPPStatusType (*GetFirmwareVersionFunc)(const CharType* serialNumber, FirmwareVersionType* version);
+typedef DPPStatusType (*GetBoardTemperatureFunc)(const CharType* serialNumber, UInt16Type* temperature);
+
+
+typedef MCUStatusType (*LiveInfo2VICOFunc)(const CharType* serialNumber, LiveInfo2VICOType* liveInfo);
+typedef MCUStatusType (*SwPkgGetActiveFunc)(const CharType* serialNumber, SoftwarePackage *swPkg);
+typedef MCUStatusType (*LiveInfo2VIAMPFunc)(const CharType* serialNumber, LiveInfo2VIAMPType* liveInfo);
+
+
 
 
 class VicoLibrary
@@ -35,6 +47,10 @@ public:
 
     // 析构函数：卸载 DLL
     ~VicoLibrary();
+
+    void checkError(const VICOStatusType sta);
+    void checkError_DPP(const DPPStatusType sta);
+    void checkError_MCU(const MCUStatusType sta);
 
     // 扫描 USB 设备
     void scanDevices();
@@ -69,12 +85,39 @@ public:
     // 刷新一下设备 只是检查是否在线
     void RefreshDeviceConnections(VICOStatusType &sta);
 
+    // 查询库版本
+    void GetLibraryVersion(VersionType* libraryVersion);
+
+    // 查询 vicodaemon 版本
+    void GetDaemonVersion(VersionType* daemonVersion);
+
+    // 查询 DPP 板温度
+    void GetBoardTemperature(const CharType* serialNumber, UInt16Type* temperature);
+
+
+    /* DPPStatusType */
+    // 查询 MCU 状态
+    void GetMCUStatusInfo(const CharType* serialNumber, MCUStatusInfoType* mcuStatus);
+    // 查询 dpp 硬件版本号
+    void GetFirmwareVersion(const CharType* serialNumber, FirmwareVersionType* version);
+
+    /* MCUStatusType */
+    // 获取实时信息 但是获取之前 需要 SoftwarePackage 是 app 形式
+    void LiveInfo2VICO(const CharType* serialNumber, LiveInfo2VICOType* liveInfo);
+    // 获取 SoftwarePackage 是什么模式
+    void SwPkgGetActive(const CharType* serialNumber, SoftwarePackage *swPkg);
+    void LiveInfo2VIAMP(const CharType* serialNumber, LiveInfo2VIAMPType* liveInfo);
+
+
+
     // 通用加载函数模板
     template <typename FuncType>
     FuncType loadFunction(const char* functionName);
 
 private:
     QLibrary* vicoLib;  // 用于加载 DLL 的 QLibrary 对象
+
+    /* VICOStatusType */
     ScanUsbDevicesFunc scanUsbDevices;  // scanUsbDevices 函数指针
     GetNumberOfDevicesFunc getNumberOfDevices;  // getNumberOfDevices 函数指针
     GetDeviceInfoByIndexFunc getDeviceInfoByIndex;  // getDeviceInfoByIndex 函数指针
@@ -86,6 +129,22 @@ private:
     GetRunStatisticsFunc getRunStatistics;  // getRunStatistics 函数指针
     GetMCADataUInt32Func getMCADataUInt32;  // getMCADataUInt32 函数指针
     RefreshDeviceConnectionsFunc refreshDeviceConnections;  // refreshDeviceConnections 函数指针
+    GetLibraryVersionFunc getLibraryVersion;    // getLibraryVersionFunc 函数指针
+    GetDaemonVersionFunc getDaemonVersion;   // getDaemonVersion 函数指针
+
+    /* DPPStatusType */
+    GetMCUStatusInfoFunc getMCUStatusInfo;  // getMCUStatusInfo 函数指针
+    GetFirmwareVersionFunc getFirmwareVersion; // getFirmwareVersion 函数指针
+    GetBoardTemperatureFunc getBoardTemperature;    // getBoardTemperature 函数指针
+
+    /* MCUStatusType */
+    LiveInfo2VICOFunc liveInfo2VICO;    // liveInfo2VICO 函数指针
+    SwPkgGetActiveFunc swPkgGetActive;  // swPkgGetActive 函数指针
+    LiveInfo2VIAMPFunc liveInfo2VIAMP;  // liveInfo2VIAMP 函数指针
+
+
+
+
 };
 
 #endif // VICO_LIBRARY_H

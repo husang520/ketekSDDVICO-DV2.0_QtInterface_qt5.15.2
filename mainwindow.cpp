@@ -18,6 +18,15 @@ MainWindow::MainWindow(QWidget *parent)
     setupConnections();
 
 
+    setupTimer();
+
+
+
+
+
+
+
+
 
 }
 
@@ -26,6 +35,12 @@ MainWindow::~MainWindow()
     delete ui;
 
     delete vicolib;  // 清理 QLibrary 对象
+
+    if (m_liveTimer) {
+        m_liveTimer->stop();
+        // 不要 delete
+        m_liveTimer = nullptr;
+    }
 
 }
 
@@ -226,6 +241,9 @@ void MainWindow::setupMenuConnections()
 
     // 连接 "refresh" 菜单项
     connectMenuAction("actionrefresh", &MainWindow::refreshDeviceInfo);
+
+    // 连接 " actiongetMCUStatus " 菜单项
+    connectMenuAction("actiongetMCUStatus", &MainWindow::getMCUStatus);
 }
 
 void MainWindow::setupStatusBar()
@@ -281,6 +299,17 @@ void MainWindow::setupConnections()
     connect(ui->pushButton_setPeakingTime, &QPushButton::clicked, this, &MainWindow::setPeakingTime);
     connect(ui->pushButton_setMeasureTime, &QPushButton::clicked, this, &MainWindow::setMeasureTime);
     connect(ui->pushButton_startRun, &QPushButton::clicked, this, &MainWindow::startRun);
+}
+
+void MainWindow::setupTimer()
+{
+    if(!m_liveTimer){
+        m_liveTimer = new QTimer(this);
+        connect(m_liveTimer, &QTimer::timeout,
+                this, &MainWindow::updateUI);
+    }
+
+    m_liveTimer->start(1000);  // 1000 ms 刷新一次
 }
 
 void MainWindow::updateServiceStatus(const QString &status)
@@ -381,6 +410,16 @@ void MainWindow::refreshDeviceInfo()
         otherInfoLabel->setText(QString("Unknown error occurred."));
         break;
     }
+}
+
+void MainWindow::getMCUStatus()
+{
+    vicolib->GetMCUStatusInfo(vico_ctx.serialNumber, &vico_ctx.mcuStatus);
+    infoOutput(QString("MCU status, hasPower: %1, isAlmostReady: %2 isReady: %3")
+               .arg(vico_ctx.mcuStatus.hasPower)
+               .arg(vico_ctx.mcuStatus.isAlmostReady)
+               .arg(vico_ctx.mcuStatus.isReady));
+
 }
 
 void MainWindow::onRunTimerTimeout()
@@ -538,6 +577,257 @@ void MainWindow::saveMCAToFile(const UInt32Type *mcaData, int numberOfBins)
 
     file.close();
     qDebug() << "MCA data saved to" << filePath;
+
+}
+
+void MainWindow::updateUI()
+{
+    qDebug() << "vico_ctx.serialNumber: " << vico_ctx.serialNumber;
+    if(vico_ctx.serialNumber[0] == '\0'){
+        // QMessageBox::warning(
+        //     this,
+        //     tr("Operation not allowed"),
+        //     tr("Please select a device (serial number) first.")
+        //     );
+        return;
+    }
+
+    vicolib->GetLibraryVersion(&vico_ctx.libraryVersion);
+    qDebug() << vico_ctx.libraryVersion.major << vico_ctx.libraryVersion.minor
+             << vico_ctx.libraryVersion.build << vico_ctx.libraryVersion.patch;
+    infoOutput(QString("library version: major: %1, minor: %2, patch: %3, build: %4")
+                   .arg(vico_ctx.libraryVersion.major)
+                   .arg(vico_ctx.libraryVersion.minor)
+                   .arg(vico_ctx.libraryVersion.patch)
+                   .arg(vico_ctx.libraryVersion.build));
+    ui->lineEdit_libVersion->setText(QString("%1.%2.%3.%4")
+                                         .arg(vico_ctx.libraryVersion.major)
+                                         .arg(vico_ctx.libraryVersion.minor)
+                                         .arg(vico_ctx.libraryVersion.patch)
+                                         .arg(vico_ctx.libraryVersion.build));
+
+    vicolib->GetDaemonVersion(&vico_ctx.daemonVersion);
+    qDebug() << vico_ctx.daemonVersion.major << vico_ctx.daemonVersion.minor
+             << vico_ctx.daemonVersion.build << vico_ctx.daemonVersion.patch;
+    infoOutput(QString("daemon version: major: %1, minor: %2, patch: %3, build: %4")
+                   .arg(vico_ctx.daemonVersion.major)
+                   .arg(vico_ctx.daemonVersion.minor)
+                   .arg(vico_ctx.daemonVersion.patch)
+                   .arg(vico_ctx.daemonVersion.build));
+    ui->lineEdit_daemonVersion->setText(QString("%1.%2.%3.%4")
+                                            .arg(vico_ctx.daemonVersion.major)
+                                            .arg(vico_ctx.daemonVersion.minor)
+                                            .arg(vico_ctx.daemonVersion.patch)
+                                            .arg(vico_ctx.daemonVersion.build));
+
+    vicolib->GetFirmwareVersion(vico_ctx.serialNumber, &vico_ctx.version);
+    infoOutput(QString("DPP firmware version: major: %1, minor: %2, patch: %3, build: %4, variant: %5")
+                   .arg(vico_ctx.version.major)
+                   .arg(vico_ctx.version.minor)
+                   .arg(vico_ctx.version.patch)
+                   .arg(vico_ctx.version.build)
+                   .arg(vico_ctx.version.variant));
+    ui->lineEdit_firewareVersion->setText(QString("%1.%2.%3.%4.%5")
+                                              .arg(vico_ctx.version.major)
+                                              .arg(vico_ctx.version.minor)
+                                              .arg(vico_ctx.version.patch)
+                                              .arg(vico_ctx.version.build)
+                                              .arg(vico_ctx.version.variant));
+
+    vicolib->GetBoardTemperature(vico_ctx.serialNumber, &vico_ctx.temperature);
+    infoOutput(QString("DPP board temperature: %1")
+                   .arg((vico_ctx.temperature/16) - 273.15));   // 得到的是 开尔文 需要减去 273.15 得到摄氏度
+    ui->lineEdit_DPPBoardTemp->setText(QString("%1").arg((vico_ctx.temperature/16) - 273.15));
+
+    vicolib->SwPkgGetActive(vico_ctx.serialNumber, &vico_ctx.swPkg);
+
+    qDebug() << "vico_ctx.swPkg:" << QString("0x%1").arg(vico_ctx.swPkg, 0, 16).toUpper();
+    if(vico_ctx.swPkg == Bootloader){
+        return;
+    }
+
+    vicolib->LiveInfo2VICO(vico_ctx.serialNumber, &vico_ctx.liveInfo);
+    QString st;
+    switch (vico_ctx.liveInfo.st) {
+    case INIT:
+        st = "INIT";
+        break;
+    case OPERATION:
+        st = "OPERATION";
+        break;
+    case VICO_ERROR:
+        st = "VICO_ERROR";
+        break;
+    case ECO3:
+        st = "ECO3";
+        break;
+    case EEA:
+        st = "EEA";
+        break;
+    default:
+        st = "UNKNOWN";
+        break;
+    }
+    ui->lineEdit_VICO_AV_DV_Status->setText(st);
+
+    QString er;
+    switch (vico_ctx.liveInfo.er) {
+    case NO_VICO_ERROR:
+        er = "NO_VICO_ERROR";
+        break;
+    case VOERR_01:
+        er = "VOERR_01";
+        break;
+    case VOERR_02:
+        er = "VOERR_02";
+        break;
+    case VOERR_03:
+        er = "VOERR_03";
+        break;
+    case VOERR_11:
+        er = "VOERR_11";
+        break;
+    case VOERR_12:
+        er = "VOERR_12";
+        break;
+    case VOERR_13:
+        er = "VOERR_13";
+        break;
+    case VOERR_14:
+        er = "VOERR_14";
+        break;
+    case UNKNOWN_VICO_ERROR:
+        er = "UNKNOWN_VICO_ERROR";
+        break;
+    default:
+        er = "UNKNOWN";
+        break;
+    }
+    ui->lineEdit_VICO_AV_DV_Error->setText(er);
+
+    ui->lineEdit_vIn->setText(QString("%1").arg(vico_ctx.liveInfo.vIn));
+    ui->lineEdit_p5v->setText(QString("%1").arg(vico_ctx.liveInfo.p5v));
+    ui->lineEdit_n5vActive->setText(vico_ctx.liveInfo.n5vActive ? "true" : "false");
+    ui->lineEdit_mcu3v3->setText(QString("%1").arg(vico_ctx.liveInfo.mcu3v3));
+    ui->lineEdit_ref2v5->setText(QString("%1").arg(vico_ctx.liveInfo.ref2v5));
+    ui->lineEdit_nhvActive->setText(vico_ctx.liveInfo.hvActive ? "true" : "false");
+    ui->lineEdit_nhvDACSet->setText(QString("%1").arg(vico_ctx.liveInfo.hvDac));
+    ui->lineEdit_nhvActual->setText(QString("%1").arg(vico_ctx.liveInfo.hv));
+    ui->lineEdit_pwrSta->setText(vico_ctx.liveInfo.pwr ? "true" : "false");
+    ui->lineEdit_usbSta->setText(vico_ctx.liveInfo.usb ? "true" : "false");
+    ui->lineEdit_gpioSta->setText(vico_ctx.liveInfo.gpio ? "true" : "false");
+    ui->lineEdit_reqFlashSta->setText(vico_ctx.liveInfo.reqfbl ? "true" : "false");
+    ui->lineEdit_fpga3v3->setText(QString("%1").arg(vico_ctx.liveInfo.fpga3v3));
+    ui->lineEdit_therm1->setText(QString("%1").arg(vico_ctx.liveInfo.therm1));
+    ui->lineEdit_therm2->setText(QString("%1").arg(vico_ctx.liveInfo.therm2));
+
+
+    vicolib->LiveInfo2VIAMP(vico_ctx.serialNumber, &vico_ctx.liveInfo_viamp);
+    QString st_viamp;
+    switch (vico_ctx.liveInfo_viamp.st) {
+    case INACTIVE:
+        st_viamp = "INACTIVE";
+        break;
+    case EN_VOLTAGE:
+        st_viamp = "EN_VOLTAGE";
+        break;
+    case CHECK_CONN_TEMP:
+        st_viamp = "CHECK_CONN_TEMP";
+        break;
+    case CHECK_CONN_I2C:
+        st_viamp = "CHECK_CONN_I2C";
+        break;
+    case DISCONNECTED:
+        st_viamp = "DISCONNECTED";
+        break;
+    case VALIDATE_EEPCONTENT:
+        st_viamp = "VALIDATE_EEPCONTENT";
+        break;
+    case NO_OPERATION:
+        st_viamp = "NO_OPERATION";
+        break;
+    case ENABLE_HV:
+        st_viamp = "ENABLE_HV";
+        break;
+    case VIAMP_ERROR:
+        st_viamp = "VIAMP_ERROR";
+        break;
+    case PREPARE_OPERATION:
+        st_viamp = "PREPARE_OPERATION";
+        break;
+    case OP_READY:
+        st_viamp = "OP_READY";
+        break;
+    case OP_ECO1:
+        st_viamp = "OP_ECO1";
+        break;
+    case OP_FULL:
+        st_viamp = "OP_FULL";
+        break;
+    case DISABLE_HV:
+        st_viamp = "DISABLE_HV";
+        break;
+    case OP_ECO2:
+        st_viamp = "OP_ECO2";
+        break;
+    default:
+        st_viamp = "UNKNOWN";
+        break;
+    }
+    ui->lineEdit_VIAMP_Status->setText(st_viamp);
+
+    QString er_viamp;
+    switch (vico_ctx.liveInfo_viamp.er) {
+    case NO_VIAMP_ERROR:
+        er_viamp = "NO_VIAMP_ERROR";
+        break;
+    case VPERR_01:
+        er_viamp = "VPERR_01";
+        break;
+    case VPERR_02:
+        er_viamp = "VPERR_02";
+        break;
+    case VPERR_03:
+        er_viamp = "VPERR_03";
+        break;
+    case VPERR_04:
+        er_viamp = "VPERR_04";
+        break;
+    case VPERR_05:
+        er_viamp = "VPERR_05";
+        break;
+    case VPERR_06:
+        er_viamp = "VPERR_06";
+        break;
+    case UNKNOWN_VIAMP_ERROR:
+        er_viamp = "UNKNOWN_VIAMP_ERROR";
+        break;
+    default:
+        er_viamp = "UNKNOWN";
+        break;
+    }
+    ui->lineEdit_VIAMP_Error->setText(er_viamp);
+
+    ui->lineEdit_viampAdc->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.viampAdc));
+    ui->lineEdit_Ring1->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.r1));
+    ui->lineEdit_Back->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.bk));
+    ui->lineEdit_RingX->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.rx));
+    ui->lineEdit_itec->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.itec));
+    ui->lineEdit_utec->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.utec));
+    ui->lineEdit_sddTmp->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.sddTmp));
+    ui->lineEdit_sddTargetTmp->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.targetTmp));
+    ui->lineEdit_rdySta->setText(vico_ctx.liveInfo_viamp.rdy ? "true" : "false");
+    ui->lineEdit_almostrdySta->setText(vico_ctx.liveInfo_viamp.ardy ? "true" : "false");
+    ui->lineEdit_techotSideTmp->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.hotSide));
+    ui->lineEdit_monSigFinal->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.monSigFinal));
+    ui->lineEdit_ctlSigFinal->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.ctrlSigFinal));
+    ui->lineEdit_iPartLimit->setText(vico_ctx.liveInfo_viamp.iPartLimit ? "true" : "false");
+    ui->lineEdit_tecActive->setText(vico_ctx.liveInfo_viamp.tecActive ? "true" : "false");
+    ui->lineEdit_tecDac->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.tecDac));
+    ui->lineEdit_pPart->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.pPart));
+    ui->lineEdit_iPart->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.iPart));
+    ui->lineEdit_dPart->setText(QString("%1").arg(vico_ctx.liveInfo_viamp.dPart));
+
 
 }
 
